@@ -13,17 +13,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PlayDataTablesConfig.
+ * JavaDataTablesConfig.
  *
  * @author Pierre Adam
  * @since 21.03.29
  */
-public class PlayDataTablesConfig {
+public class JavaDataTablesConfig {
 
     /**
      * The global instance of PlayDataTablesConfig.
      */
-    private static PlayDataTablesConfig instance;
+    private static JavaDataTablesConfig instance;
 
     /**
      * The Converters.
@@ -33,7 +33,7 @@ public class PlayDataTablesConfig {
     /**
      * Instantiates a new PlayDataTablesConfig.
      */
-    private PlayDataTablesConfig() {
+    private JavaDataTablesConfig() {
         this.converters = new HashMap<>();
     }
 
@@ -42,10 +42,10 @@ public class PlayDataTablesConfig {
      *
      * @return the instance
      */
-    public synchronized static PlayDataTablesConfig getInstance() {
-        if (PlayDataTablesConfig.instance == null) {
-            PlayDataTablesConfig.instance = new PlayDataTablesConfig();
-            PlayDataTablesConfig.instance
+    public synchronized static JavaDataTablesConfig getInstance() {
+        if (JavaDataTablesConfig.instance == null) {
+            JavaDataTablesConfig.instance = new JavaDataTablesConfig();
+            JavaDataTablesConfig.instance
                     .addConverter(new StringConverter())
                     .addConverter(new IntegerConverter())
                     .addConverter(new LongConverter())
@@ -59,7 +59,7 @@ public class PlayDataTablesConfig {
                     .addConverter(new JsonNodeConverter())
                     .addConverter(new DateTimeConverter());
         }
-        return PlayDataTablesConfig.instance;
+        return JavaDataTablesConfig.instance;
     }
 
     /**
@@ -69,7 +69,7 @@ public class PlayDataTablesConfig {
      * @param converter the converter
      * @return the play data tables config
      */
-    public <T> PlayDataTablesConfig addConverter(final Converter<T> converter) {
+    public <T> JavaDataTablesConfig addConverter(final Converter<T> converter) {
         this.converters.put(converter.getBackedType(), converter);
         return this;
     }

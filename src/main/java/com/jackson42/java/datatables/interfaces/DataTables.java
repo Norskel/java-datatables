@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * PlayDataTables.
+ * DataTables.
  *
  * @param <E> the Entity type
  * @param <S> the Source Provider type

@@ -59,10 +59,9 @@ libraryDependencies += "com.jackson42.java" % "java-datatables" % "23.06"
 </dependency>
 ``` 
 
-### Implementing a data provider for Play-DataTables
+### Implementing a data provider for Java-DataTables
 
-Example of implementation is available in the tests. For a more concrete example, take a look
-at [play-ebean-datatables](https://github.com/PierreAdam/play-ebean-datatables)
+TODO
 
 ## Versions
 
@@ -79,4 +78,4 @@ at [play-ebean-datatables](https://github.com/PierreAdam/play-ebean-datatables)
 ## License
 
 This project is released under terms of
-the [MIT license](https://raw.githubusercontent.com/PierreAdam/play-ebean-datatables/master/LICENSE).
+the [MIT license](https://raw.githubusercontent.com/PierreAdam/java-datatables/master/LICENSE).

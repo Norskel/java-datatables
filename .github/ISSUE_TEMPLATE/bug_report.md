@@ -6,13 +6,12 @@ labels: ''
 ---
 
 **Versions**
-PlayFramework:
 DataTables:
 Java:
 
 **Describe the bug**
 A clear and concise description of what the problem is.
-Give the version 
+Give the version
 
 **To Reproduce**
 Steps to reproduce the behavior. Please post all necessary

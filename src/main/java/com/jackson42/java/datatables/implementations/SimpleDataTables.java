@@ -9,7 +9,7 @@ package com.jackson42.java.datatables.implementations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.jackson42.java.datatables.configs.PlayDataTablesConfig;
+import com.jackson42.java.datatables.configs.JavaDataTablesConfig;
 import com.jackson42.java.datatables.converters.Converter;
 import com.jackson42.java.datatables.entities.Column;
 import com.jackson42.java.datatables.entities.Parameters;
@@ -308,7 +308,7 @@ public abstract class SimpleDataTables<E, S, P extends Payload> extends Customiz
 
         if (converter == null) {
             // Try getting a converter from the global converters.
-            converter = this.getConverterFromMap(obj, PlayDataTablesConfig.getInstance().getConverters());
+            converter = this.getConverterFromMap(obj, JavaDataTablesConfig.getInstance().getConverters());
         }
 
         return converter;
