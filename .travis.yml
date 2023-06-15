@@ -1,0 +1,16 @@
+language: java
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.m2
+
+jdk:
+  - openjdk11
+
+script:
+  - mvn clean install -P test-coverage
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
