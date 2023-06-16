@@ -25,9 +25,9 @@ public class Column {
     private String name;
 
     /**
-     * Is the column searcheable.
+     * Is the column searchable.
      */
-    private boolean searcheable;
+    private boolean searchable;
 
     /**
      * Is the column orderable.
@@ -80,17 +80,17 @@ public class Column {
      *
      * @return true if is searcheable
      */
-    public boolean isSearcheable() {
-        return this.searcheable;
+    public boolean isSearchable() {
+        return this.searchable;
     }
 
     /**
      * Set searcheable.
      *
-     * @param searcheable true if searcheable
+     * @param searchable true if searcheable
      */
-    public void setSearcheable(final boolean searcheable) {
-        this.searcheable = searcheable;
+    public void setSearchable(final boolean searchable) {
+        this.searchable = searchable;
     }
 
     /**

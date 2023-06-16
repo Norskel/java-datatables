@@ -125,7 +125,7 @@ public class ParametersHelper {
             this.columns.add(new Column() {{
                 this.setData(lastId + 1);
                 this.setName(name);
-                this.setSearcheable(searcheable);
+                this.setSearchable(searcheable);
                 this.setOrderable(orderable);
             }});
             return this;
