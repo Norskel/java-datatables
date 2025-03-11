@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.PierreAdam</groupId>
+    <groupId>com.github.PierreAdam.java-datatables</groupId>
     <artifactId>java-datatables</artifactId>
     <version>DEVELOPMENT</version>
     <packaging>pom</packaging>
@@ -60,6 +60,8 @@
 
     <modules>
         <module>core</module>
+        <module>jooq</module>
+        <module>test-data</module>
     </modules>
 
     <dependencies>
@@ -110,12 +112,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.4.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

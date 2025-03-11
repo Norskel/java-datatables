@@ -11,18 +11,37 @@
         <version>DEVELOPMENT</version>
     </parent>
 
-    <artifactId>java-datatables-core</artifactId>
+    <artifactId>java-datatables-jooq</artifactId>
     <version>DEVELOPMENT</version>
 
     <packaging>jar</packaging>
-    <name>Java-DataTables-Core</name>
+    <name>Java-DataTables-Jooq</name>
     <description>
         A Java abstraction to parse queries from JavaScript library DataTables.
-        Core library necessary to the project
+        Jooq implementation.
     </description>
     <url>https://github.com/PierreAdam/java-datatables</url>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.PierreAdam.java-datatables</groupId>
+            <artifactId>java-datatables-core</artifactId>
+            <version>DEVELOPMENT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>3.14.16</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.3.232</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.PierreAdam.java-datatables</groupId>
             <artifactId>java-datatables-test-data</artifactId>

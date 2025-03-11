@@ -11,23 +11,26 @@
         <version>DEVELOPMENT</version>
     </parent>
 
-    <artifactId>java-datatables-core</artifactId>
+    <artifactId>java-datatables-test-data</artifactId>
     <version>DEVELOPMENT</version>
 
     <packaging>jar</packaging>
-    <name>Java-DataTables-Core</name>
+    <name>Java-DataTables-Test-Data</name>
     <description>
-        A Java abstraction to parse queries from JavaScript library DataTables.
-        Core library necessary to the project
+        Test data used to test other modules.
     </description>
     <url>https://github.com/PierreAdam/java-datatables</url>
 
+    <properties>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>com.github.PierreAdam.java-datatables</groupId>
-            <artifactId>java-datatables-test-data</artifactId>
-            <version>DEVELOPMENT</version>
-            <scope>test</scope>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
         </dependency>
     </dependencies>
 </project>
