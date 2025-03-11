@@ -2,7 +2,6 @@
 
 [![Latest release](https://img.shields.io/github/v/release/PierreAdam/java-datatables)](https://github.com/PierreAdam/java-datatables/releases/latest)
 ![JDK](https://img.shields.io/badge/JDK-1.8+-blue.svg)
-[![Build Status](https://travis-ci.com/PierreAdam/java-datatables.svg?branch=master)](https://travis-ci.com/PierreAdam/java-datatables)
 [![GitHub license](https://img.shields.io/github/license/PierreAdam/java-datatables)](https://raw.githubusercontent.com/PierreAdam/java-datatables/master/LICENSE)
 
 Java-DataTables is a library for derivative of my other project Play-DataTables that allows you to easily
@@ -13,7 +12,7 @@ library__ as it's the base for other libraries that implements some data provide
 
 List of the current data providers :
 
-- TODO
+- JOOQ using `java-datatables-jooq`
 
 *****
 
@@ -45,7 +44,7 @@ $> mvn deploy -P release
 ### With Sbt
 
 ```scala
-libraryDependencies += "com.jackson42.java" % "java-datatables" % "23.06"
+libraryDependencies += "com.github.PierreAdam.java-datatables" % "java-datatables-core" % "1.1.0"
 ```
 
 ### With Maven
@@ -53,27 +52,17 @@ libraryDependencies += "com.jackson42.java" % "java-datatables" % "23.06"
 ```xml
 
 <dependency>
-    <groupId>com.jackson42.play</groupId>
-    <artifactId>play-datatables</artifactId>
-    <version>23.06</version>
+    <groupId>com.github.PierreAdam.java-datatables</groupId>
+    <artifactId>java-datatables-core</artifactId>
+    <version>1.1.0</version>
 </dependency>
 ``` 
-
-### Implementing a data provider for Java-DataTables
-
-TODO
 
 ## Versions
 
 | Library Version | Tested DataTables Version |
 |-----------------|---------------------------|
-| 21.06           | 1.10.x                    |
-
-### Changelog
-
-#### 23.06
-
-- Migration from Play-DataTables to a more generic implementation.
+| 1.1.0           | 1.10.x                    |
 
 ## License
 
