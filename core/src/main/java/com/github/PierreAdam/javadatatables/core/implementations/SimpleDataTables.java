@@ -9,6 +9,8 @@ package com.github.PierreAdam.javadatatables.core.implementations;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.PierreAdam.javadatatables.core.configs.JavaDataTablesConfig;
 import com.github.PierreAdam.javadatatables.core.converters.Converter;
 import com.github.PierreAdam.javadatatables.core.entities.Column;
@@ -18,6 +20,7 @@ import com.github.PierreAdam.javadatatables.core.entities.internal.DataSource;
 import com.github.PierreAdam.javadatatables.core.entities.internal.FieldBehavior;
 import com.github.PierreAdam.javadatatables.core.enumerations.OrderEnum;
 import com.github.PierreAdam.javadatatables.core.interfaces.DataTables;
+import com.github.PierreAdam.javadatatables.core.interfaces.RowExtraData;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -93,6 +97,11 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
     protected Consumer<S> initProviderConsumer;
 
     /**
+     * The Row extra data.
+     */
+    protected RowExtraDataImpl<E> rowExtraData;
+
+    /**
      * Instantiates a new A play data tables.
      *
      * @param entityClass      the entity class
@@ -108,6 +117,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         this.fieldsBehavior = new HashMap<>();
         this.converters = new HashMap<>();
         this.globalSearchHandler = null;
+        this.rowExtraData = new RowExtraDataImpl<>();
     }
 
     @Override
@@ -125,6 +135,13 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
     }
 
     @Override
+    public U setRowExtraData(final Consumer<RowExtraData<E>> rowExtraDataConsumer) {
+        rowExtraDataConsumer.accept(this.rowExtraData);
+
+        return this.asSelf();
+    }
+
+    @Override
     public JsonNode getAjaxResult(final Parameters parameters, final C context) {
         // Prepare data from the parameters and prepare the answer.
         final AjaxResult result = new AjaxResult(parameters.getDraw(), this.objectMapper);
@@ -137,7 +154,19 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         final DataSource<E> source = this.processProvider(provider, context, parameters);
 
         for (final E entity : source.getEntities()) {
-            result.getData().add(this.objectToArrayNode(entity, parameters, context));
+            final JsonNode value;
+
+            if (this.rowExtraData.present()) {
+                final ObjectNode objectNode = this.objectToObjectNode(entity, parameters, context);
+
+                objectNode.set("DT_RowData", this.rowExtraData.getRowData().apply(entity));
+
+                value = objectNode;
+            } else {
+                value = this.objectToArrayNode(entity, parameters, context);
+            }
+
+            result.getData().add(value);
         }
 
         result.setRecordsTotal(source.getRecordsTotal());
@@ -240,7 +269,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
      * @param context    the context
      * @return the array node
      */
-    protected JsonNode objectToArrayNode(final E entity, final Parameters parameters, final C context) {
+    protected ArrayNode objectToArrayNode(final E entity, final Parameters parameters, final C context) {
         final ArrayNode data = this.objectMapper.createArrayNode();
 
         parameters.getOrderedColumns().forEach(column -> {
@@ -252,8 +281,33 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
                 if (optionalDisplaySupplier.isPresent()) {
                     data.add(optionalDisplaySupplier.get().apply(entity, context));
                 } else {
-                    this.resolveColumn(column, data, entity, context);
+                    data.add(this.resolveColumn(column, entity, context));
                 }
+            }
+        });
+
+        return data;
+    }
+
+    /**
+     * Object to object node json node.
+     *
+     * @param entity     the entity
+     * @param parameters the parameters
+     * @param context    the context
+     * @return the json node
+     */
+    protected ObjectNode objectToObjectNode(final E entity, final Parameters parameters, final C context) {
+        final ObjectNode data = this.objectMapper.createObjectNode();
+
+        parameters.getOrderedColumns().stream().filter(Objects::nonNull).forEach(column -> {
+            final String columnName = column.getName();
+            final Optional<BiFunction<E, C, String>> optionalDisplaySupplier = this.field(columnName).getDisplaySupplier();
+
+            if (optionalDisplaySupplier.isPresent()) {
+                data.put(columnName, optionalDisplaySupplier.get().apply(entity, context));
+            } else {
+                data.set(columnName, this.resolveColumn(column, entity, context));
             }
         });
 
@@ -264,18 +318,17 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
      * Resolve column.
      *
      * @param column  the column
-     * @param data    the data
      * @param entity  the entity
      * @param context the context
+     * @return the json node
      */
-    protected void resolveColumn(final Column column, final ArrayNode data, final E entity, final C context) {
+    protected JsonNode resolveColumn(final Column column, final E entity, final C context) {
         final Method method = this.methodForColumn(column);
 
         if (method == null) {
             this.logger.warn("No getter were find for the field \"{}\" and no displaySupplier were set. Adding null !",
                     column.getName());
-            data.addNull();
-            return;
+            return NullNode.getInstance();
         }
 
         try {
@@ -283,12 +336,12 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
             final Converter<?> converter = this.tryFindConverter(obj);
 
             if (converter != null) {
-                converter.addToArray(data, obj, context);
+                return converter.asValueNode(obj, context);
             } else {
-                data.addNull();
+                return NullNode.getInstance();
             }
         } catch (final IllegalAccessException | InvocationTargetException e) {
-            data.addNull();
+            return NullNode.getInstance();
         }
     }
 

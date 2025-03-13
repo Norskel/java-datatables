@@ -6,7 +6,9 @@
 
 package com.github.PierreAdam.javadatatables.core.converters.standards;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.PierreAdam.javadatatables.core.converters.Converter;
 
 /**
@@ -25,7 +27,7 @@ public class IntegerConverter extends Converter<Integer> {
     }
 
     @Override
-    public void internalAddToArray(final ArrayNode array, final Integer obj, final Object context) {
-        array.add(obj);
+    protected JsonNode internalAsValueNode(final Integer obj, final Object context) {
+        return (obj == null ? NullNode.getInstance() : IntNode.valueOf(obj));
     }
 }

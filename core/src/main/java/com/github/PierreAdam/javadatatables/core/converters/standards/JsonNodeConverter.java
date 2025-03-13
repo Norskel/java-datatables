@@ -7,7 +7,6 @@
 package com.github.PierreAdam.javadatatables.core.converters.standards;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.PierreAdam.javadatatables.core.converters.Converter;
 
 /**
@@ -26,7 +25,7 @@ public class JsonNodeConverter extends Converter<JsonNode> {
     }
 
     @Override
-    public void internalAddToArray(final ArrayNode array, final JsonNode obj, final Object context) {
-        array.add(obj);
+    protected JsonNode internalAsValueNode(final JsonNode obj, final Object context) {
+        return obj;
     }
 }

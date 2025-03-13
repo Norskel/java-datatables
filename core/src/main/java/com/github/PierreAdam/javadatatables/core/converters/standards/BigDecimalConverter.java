@@ -6,7 +6,9 @@
 
 package com.github.PierreAdam.javadatatables.core.converters.standards;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.DecimalNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.PierreAdam.javadatatables.core.converters.Converter;
 
 import java.math.BigDecimal;
@@ -27,7 +29,7 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
     }
 
     @Override
-    public void internalAddToArray(final ArrayNode array, final BigDecimal obj, final Object context) {
-        array.add(obj);
+    protected JsonNode internalAsValueNode(final BigDecimal obj, final Object context) {
+        return (obj == null ? NullNode.getInstance() : DecimalNode.valueOf(obj));
     }
 }

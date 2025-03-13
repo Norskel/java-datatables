@@ -24,7 +24,8 @@
 
 package com.github.PierreAdam.javadatatables.core.mocking.dataprovider;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.PierreAdam.javadatatables.core.converters.Converter;
 import com.github.PierreAdam.javadatatables.testdata.AddressEntity;
 
@@ -44,7 +45,7 @@ public class AddressConverter extends Converter<AddressEntity> {
     }
 
     @Override
-    protected void internalAddToArray(final ArrayNode array, final AddressEntity obj, final Object context) {
-        array.add(String.format("%s %s %s", obj.getStreetAddress(), obj.getCity(), obj.getZipCode()));
+    protected JsonNode internalAsValueNode(final AddressEntity obj, final Object context) {
+        return TextNode.valueOf(String.format("%s %s %s", obj.getStreetAddress(), obj.getCity(), obj.getZipCode()));
     }
 }

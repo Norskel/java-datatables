@@ -6,7 +6,10 @@
 
 package com.github.PierreAdam.javadatatables.core.converters.standards;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.LongNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.PierreAdam.javadatatables.core.converters.Converter;
 
 /**
@@ -25,12 +28,17 @@ public class EnumConverter extends Converter<Enum> {
     }
 
     @Override
-    public void internalAddToArray(final ArrayNode array, final Enum obj, final Object context) {
+    protected JsonNode internalAsValueNode(final Enum obj, final Object context) {
+        if (obj == null) {
+            return NullNode.getInstance();
+        }
+
         final String tmp = obj.toString();
+
         try {
-            array.add(Long.valueOf(tmp));
+            return LongNode.valueOf(Long.valueOf(tmp));
         } catch (final NumberFormatException ignore) {
-            array.add(tmp);
+            return TextNode.valueOf(tmp);
         }
     }
 }

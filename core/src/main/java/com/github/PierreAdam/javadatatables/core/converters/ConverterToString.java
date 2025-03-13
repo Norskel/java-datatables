@@ -6,7 +6,9 @@
 
 package com.github.PierreAdam.javadatatables.core.converters;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * ConverterToString.
@@ -27,8 +29,8 @@ public abstract class ConverterToString<T> extends Converter<T> {
     }
 
     @Override
-    public void internalAddToArray(final ArrayNode array, final T obj, final Object context) {
-        array.add(this.convert(obj, context));
+    protected JsonNode internalAsValueNode(final T obj, final Object context) {
+        return (obj == null ? NullNode.getInstance() : TextNode.valueOf(this.convert(obj, context)));
     }
 
     /**

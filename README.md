@@ -62,7 +62,9 @@ libraryDependencies += "com.github.PierreAdam.java-datatables" % "java-datatable
 
 | Library Version | Tested DataTables Version |
 |-----------------|---------------------------|
+| 1.0.0           | 1.10.x                    |
 | 1.1.0           | 1.10.x                    |
+| 1.2.0           | 1.10.x                    |
 
 ## License
 

@@ -33,7 +33,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      * The initial where condition. Is called on each forged request and should not contains orders or weird things.
      *
      * @param initialQuery the consumer that allows to set the initial query.
-     * @return itself
+     * @return itself init provider consumer
      */
     U setInitProviderConsumer(final Consumer<S> initialQuery);
 
@@ -43,7 +43,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param fieldName     the field name
      * @param fieldSupplier the field display supplier
-     * @return itself
+     * @return itself field display supplier
      */
     default U setFieldDisplaySupplier(final String fieldName, final Function<E, String> fieldSupplier) {
         this.field(fieldName).setDisplaySupplier((entity, request) -> fieldSupplier.apply(entity));
@@ -57,7 +57,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param fieldName     the field name
      * @param fieldSupplier the field display supplier
-     * @return itself
+     * @return itself field display supplier
      */
     default U setFieldDisplaySupplier(final String fieldName, final BiFunction<E, C, String> fieldSupplier) {
         this.field(fieldName).setDisplaySupplier(fieldSupplier);
@@ -71,7 +71,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param fieldName     the field name
      * @param searchHandler the field search handler
-     * @return itself
+     * @return itself search handler
      */
     default U setSearchHandler(final String fieldName, final BiConsumer<S, String> searchHandler) {
         this.field(fieldName).setSearchHandler(searchHandler);
@@ -85,7 +85,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param fieldName    the field name
      * @param orderHandler the field order handler
-     * @return itself
+     * @return itself order handler
      */
     default U setOrderHandler(final String fieldName, final BiConsumer<S, OrderEnum> orderHandler) {
         this.field(fieldName).setOrderHandler(orderHandler);
@@ -97,9 +97,17 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      * The global search supplier. If set, the handler will be called when a search not specific to a field is required.
      *
      * @param globalSearchHandler the global search handler
-     * @return itself
+     * @return itself global search handler
      */
     U setGlobalSearchHandler(final BiConsumer<S, String> globalSearchHandler);
+
+    /**
+     * Sets row extra data.
+     *
+     * @param rowExtraDataConsumer the row extra data consumer
+     * @return the row extra data
+     */
+    U setRowExtraData(final Consumer<RowExtraData<E>> rowExtraDataConsumer);
 
     /**
      * Builds the Ajax result in the form of a Json ObjectNode. Parameters SHOULD come from a form.
@@ -135,7 +143,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param fieldName             the field name
      * @param fieldBehaviorConsumer the field behavior consumer
-     * @return itself
+     * @return itself u
      */
     default U field(final String fieldName, final Consumer<FieldBehavior<E, S, C>> fieldBehaviorConsumer) {
         fieldBehaviorConsumer.accept(this.field(fieldName));
@@ -148,7 +156,7 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param fieldName     the field name
      * @param fieldBehavior the field behavior
-     * @return itself
+     * @return itself field
      */
     U setField(final String fieldName, final FieldBehavior<E, S, C> fieldBehavior);
 
@@ -157,14 +165,14 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
      *
      * @param <T>       the type parameter
      * @param converter the converter
-     * @return itself
+     * @return itself u
      */
     <T> U addConverter(final Converter<T> converter);
 
     /**
      * Returns itself
      *
-     * @return itself
+     * @return itself u
      */
     U asSelf();
 }

@@ -6,7 +6,7 @@
 
 package com.github.PierreAdam.javadatatables.core.converters;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * The converters may extends this class to have a standardized behavior.
@@ -41,22 +41,22 @@ public abstract class Converter<T> {
     }
 
     /**
-     * Add the object as a value in the ArrayNode.
+     * As value node value node.
      *
-     * @param array   the array
-     * @param obj     the object
+     * @param obj     the obj
      * @param context the context
+     * @return the value node
      */
-    public final void addToArray(final ArrayNode array, final Object obj, final Object context) {
-        this.internalAddToArray(array, this.getBackedType().cast(obj), context);
+    public final JsonNode asValueNode(final Object obj, final Object context) {
+        return this.internalAsValueNode(this.getBackedType().cast(obj), context);
     }
 
     /**
-     * Internal logic of the method addToArray.
+     * Internal as value node value node.
      *
-     * @param array   the array
-     * @param obj     the object
+     * @param obj     the obj
      * @param context the context
+     * @return the value node
      */
-    protected abstract void internalAddToArray(final ArrayNode array, final T obj, final Object context);
+    protected abstract JsonNode internalAsValueNode(final T obj, final Object context);
 }
