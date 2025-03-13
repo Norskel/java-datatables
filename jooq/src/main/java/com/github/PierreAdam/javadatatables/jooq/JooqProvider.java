@@ -36,6 +36,7 @@ public class JooqProvider {
      */
     private final List<Condition> conditions;
 
+
     /**
      * The Sorting.
      */
@@ -58,6 +59,12 @@ public class JooqProvider {
      */
     @Setter
     private Condition initialCondition;
+
+    /**
+     * The Sorting.
+     */
+    @Setter
+    private GroupField[] groupBy;
 
     /**
      * The Start element.
@@ -83,6 +90,7 @@ public class JooqProvider {
         this.initialSelect = null;
         this.initialFrom = null;
         this.initialCondition = null;
+        this.groupBy = null;
         this.conditions = new ArrayList<>();
         this.sorting = new ArrayList<>();
     }
@@ -132,9 +140,12 @@ public class JooqProvider {
      * @return the as forged query
      */
     public SelectForUpdateStep<? extends Record> getAsForgedQuery() {
-        return this.initialFrom
+        final SelectConditionStep<? extends Record> where = this.initialFrom
                 .apply(this.initialSelect.apply(this.dslContext))
-                .where(this.getWhereCondition())
+                .where(this.getWhereCondition());
+        final SelectHavingStep<? extends Record> postGroupBy = this.groupBy != null ? where.groupBy(this.groupBy) : where;
+
+        return postGroupBy
                 .orderBy(this.sorting)
                 .limit(this.numberOfElement)
                 .offset(this.startElement);
