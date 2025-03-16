@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * The MIT License (MIT)
  *
- * Copyright (c) 2021 Pierre Adam
+ * Copyright (c) 2025 Pierre Adam
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -110,10 +110,10 @@ public class ParametersHelper {
          * @return the column factory
          */
         public ColumnFactory addColumn(final String name, final boolean searcheable, final boolean orderable) {
-            final int lastId = this.columns.stream().map(Column::getData).max(Comparator.comparingInt(o -> o)).orElse(-1);
+            final int lastId = this.columns.stream().map(Column::getData).map(Integer::parseInt).max(Comparator.comparingInt(o -> o)).orElse(-1);
 
             this.columns.add(new Column() {{
-                this.setData(lastId + 1);
+                this.setData(String.valueOf(lastId + 1));
                 this.setName(name);
                 this.setSearchable(searcheable);
                 this.setOrderable(orderable);

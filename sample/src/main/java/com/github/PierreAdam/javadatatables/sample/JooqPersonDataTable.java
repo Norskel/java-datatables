@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.PierreAdam.javadatatables.jooq.test;
+package com.github.PierreAdam.javadatatables.sample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.PierreAdam.javadatatables.jooq.JooqDataTables;
@@ -44,12 +44,11 @@ public class JooqPersonDataTable extends JooqDataTables<PersonEntity> {
     /**
      * Instantiates a new Jooq data tables.
      *
-     * @param entityClass  the entity class
      * @param objectMapper the object mapper
      * @param dslContext   the dsl context
      */
-    public JooqPersonDataTable(final Class<PersonEntity> entityClass, final ObjectMapper objectMapper, final DSLContext dslContext) {
-        super(entityClass, objectMapper, dslContext);
+    public JooqPersonDataTable(final ObjectMapper objectMapper, final DSLContext dslContext) {
+        super(PersonEntity.class, objectMapper, dslContext);
 
         this.setInitProviderConsumer(jooqProvider -> jooqProvider
                         .setInitialSelect(context -> context.select(
@@ -75,6 +74,14 @@ public class JooqPersonDataTable extends JooqDataTables<PersonEntity> {
                                         DSL.concat(DSL.field("firstName"), DSL.inline(" "), DSL.field("lastName")).containsIgnoreCase(s)
                                 )
                         )
+                )
+                .setRowExtraData(extraData -> {
+                        }//extraData
+//                                .setRowId(personEntity -> personEntity.getUid().toString())
+//                        .setRowData(personEntity -> new HashMap<String, String>() {{
+//                            this.put("uid", personEntity.getUid().toString());
+//                            this.put("fullName", String.format("%s %s", personEntity.getFirstName(), personEntity.getLastName()));
+//                        }})
                 )
                 .field("fullName", field -> field
                         .setDisplaySupplier((entity, context) ->

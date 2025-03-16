@@ -1,7 +1,25 @@
 /*
- * Copyright (C) 2014 - 2023 PayinTech, SAS - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2025 Pierre Adam
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package com.github.PierreAdam.javadatatables.core.interfaces;
@@ -30,7 +48,8 @@ import java.util.function.Function;
 public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
 
     /**
-     * The initial where condition. Is called on each forged request and should not contains orders or weird things.
+     * The initial condition for the provider.
+     * Is called on each forged request and should not contain orders or parameters that could be changed dynamically by datatables.
      *
      * @param initialQuery the consumer that allows to set the initial query.
      * @return itself init provider consumer
@@ -170,9 +189,9 @@ public interface DataTables<E, S, C, U extends DataTables<E, S, C, U>> {
     <T> U addConverter(final Converter<T> converter);
 
     /**
-     * Returns itself
+     * Returns the current instance of the object, allowing method chaining.
      *
-     * @return itself u
+     * @return the current instance
      */
     U asSelf();
 }

@@ -1,7 +1,25 @@
 /*
- * Copyright (C) 2014 - 2023 PayinTech, SAS - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2025 Pierre Adam
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package com.github.PierreAdam.javadatatables.core.implementations;
@@ -156,10 +174,19 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         for (final E entity : source.getEntities()) {
             final JsonNode value;
 
-            if (this.rowExtraData.present()) {
+            if (this.useObjectAnswer(parameters)) {
                 final ObjectNode objectNode = this.objectToObjectNode(entity, parameters, context);
 
-                objectNode.set("DT_RowData", this.rowExtraData.getRowData().apply(entity));
+                if (this.rowExtraData.present()) {
+                    this.rowExtraData.getOptionalRowId().map(fnc -> fnc.apply(entity))
+                            .ifPresent(rowId -> objectNode.put("DT_RowId", rowId));
+                    this.rowExtraData.getOptionalRowClass().map(fnc -> fnc.apply(entity))
+                            .ifPresent(rowClass -> objectNode.put("DT_RowClass", rowClass));
+                    this.rowExtraData.getOptionalRowData().map(fnc -> fnc.apply(entity))
+                            .ifPresent(rowData -> objectNode.set("DT_RowData", this.objectMapper.valueToTree(rowData)));
+                    this.rowExtraData.getOptionalRowAttr().map(fnc -> fnc.apply(entity))
+                            .ifPresent(rowAttr -> objectNode.set("DT_RowAttr", this.objectMapper.valueToTree(rowAttr)));
+                }
 
                 value = objectNode;
             } else {
@@ -173,6 +200,21 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         result.setRecordsFiltered(source.getRecordsFiltered());
 
         return this.objectMapper.valueToTree(result);
+    }
+
+    private boolean useObjectAnswer(final Parameters parameters) {
+        for (final Column column : parameters.getColumns()) {
+            if (column.getData() != null) {
+                try {
+                    Long.parseLong(column.getData());
+                    return false;
+                } catch (final NumberFormatException ignore) {
+                    // Not a number, continue checking
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -219,7 +261,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
                 .stream()
                 .filter(column -> column != null && column.hasSearch())
                 .forEach(column -> {
-                    final String columnName = column.getName();
+                    final String columnName = column.getSafeName();
                     final Optional<BiConsumer<S, String>> optionalSearchHandler = this.field(columnName).getSearchHandler();
 
                     if (optionalSearchHandler.isPresent()) {
@@ -240,7 +282,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         final Map<Integer, Column> indexedColumns = parameters.getIndexedColumns();
 
         parameters.getSafeOrder().forEach(order -> {
-            final String columnName = indexedColumns.get(order.getColumn()).getName();
+            final String columnName = indexedColumns.get(order.getColumn()).getSafeName();
             final Optional<BiConsumer<S, OrderEnum>> optionalOrderHandler = this.field(columnName).getOrderHandler();
 
             if (optionalOrderHandler.isPresent()) {
@@ -276,7 +318,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
             if (column == null) {
                 data.addNull();
             } else {
-                final Optional<BiFunction<E, C, String>> optionalDisplaySupplier = this.field(column.getName()).getDisplaySupplier();
+                final Optional<BiFunction<E, C, String>> optionalDisplaySupplier = this.field(column.getSafeName()).getDisplaySupplier();
 
                 if (optionalDisplaySupplier.isPresent()) {
                     data.add(optionalDisplaySupplier.get().apply(entity, context));
@@ -301,7 +343,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         final ObjectNode data = this.objectMapper.createObjectNode();
 
         parameters.getOrderedColumns().stream().filter(Objects::nonNull).forEach(column -> {
-            final String columnName = column.getName();
+            final String columnName = column.getSafeName();
             final Optional<BiFunction<E, C, String>> optionalDisplaySupplier = this.field(columnName).getDisplaySupplier();
 
             if (optionalDisplaySupplier.isPresent()) {
@@ -327,7 +369,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
 
         if (method == null) {
             this.logger.warn("No getter were find for the field \"{}\" and no displaySupplier were set. Adding null !",
-                    column.getName());
+                    column.getSafeName());
             return NullNode.getInstance();
         }
 
@@ -403,13 +445,13 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
     protected Method methodForColumn(final Column column) {
         for (final String methodPrefix : SimpleDataTables.METHOD_PREFIXES) {
             try {
-                return this.entityClass.getMethod(methodPrefix + StringUtils.capitalize(column.getName()));
+                return this.entityClass.getMethod(methodPrefix + StringUtils.capitalize(column.getSafeName()));
             } catch (final NoSuchMethodException ignore) {
             }
         }
 
         try {
-            return this.entityClass.getMethod(column.getName());
+            return this.entityClass.getMethod(column.getSafeName());
         } catch (final NoSuchMethodException ignore) {
         }
 

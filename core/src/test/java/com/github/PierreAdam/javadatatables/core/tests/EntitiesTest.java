@@ -1,7 +1,7 @@
 /*
- * MIT License
+ * The MIT License (MIT)
  *
- * Copyright (c) 2021 Pierre Adam
+ * Copyright (c) 2025 Pierre Adam
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -185,12 +185,12 @@ public class EntitiesTest {
         Assertions.assertFalse(parameters.getOrder().isEmpty());
         parameters.getColumns().forEach(column -> {
             Assertions.assertNotNull(column.getName());
-            if (column.getData() > 0) {
-                Assertions.assertNotNull(column.getSearch());
-                Assertions.assertTrue(column.hasSearch());
-            } else {
+            if ("0".equals(column.getData())) {
                 Assertions.assertFalse(column.hasSearch());
                 Assertions.assertNull(column.getSearch());
+            } else {
+                Assertions.assertNotNull(column.getSearch());
+                Assertions.assertTrue(column.hasSearch());
             }
         });
 

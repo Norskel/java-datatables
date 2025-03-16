@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>DataTables Example</title>
+    <!-- Include DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                serverSide: true,
+                processing: true,
+                searching: true,
+                ajax: {
+                    url: '/data',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: function (d) {
+                        return JSON.stringify({parameters: d});
+                    }
+                },
+                columns: [
+                    {data: "firstName", orderable: true, searchable: true},
+                    {data: "lastName", orderable: true, searchable: true},
+                    {data: "title", orderable: true, searchable: true},
+                    {data: "bloodGroup", orderable: false, searchable: true},
+                    {data: "active", orderable: false, searchable: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>DataTables Example</h1>
+    <table class="display" id="example" style="width:100%">
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Title</th>
+            <th>Blood Group</th>
+            <th>Active</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
