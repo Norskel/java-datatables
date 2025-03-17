@@ -31,6 +31,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -75,13 +76,28 @@ public class JooqPersonDataTable extends JooqDataTables<PersonEntity> {
                                 )
                         )
                 )
-                .setRowExtraData(extraData -> {
-                        }//extraData
-//                                .setRowId(personEntity -> personEntity.getUid().toString())
-//                        .setRowData(personEntity -> new HashMap<String, String>() {{
-//                            this.put("uid", personEntity.getUid().toString());
-//                            this.put("fullName", String.format("%s %s", personEntity.getFirstName(), personEntity.getLastName()));
-//                        }})
+                .setRowExtraData(extraData -> extraData
+                        .setRowId(personEntity -> personEntity.getUid().toString())
+                        .setRowClass(personEntity -> personEntity.getActive() ? "active" : "inactive")
+                        .setRowAttr(personEntity -> new HashMap<String, String>() {{
+                            this.put("createdAt", personEntity.getCreatedAt().toString());
+                        }})
+                        .setRowData(personEntity -> new HashMap<String, String>() {{
+                            this.put("uid", personEntity.getUid().toString());
+                            this.put("fullName", String.format("%s %s", personEntity.getFirstName(), personEntity.getLastName()));
+                        }})
+                )
+                .field("firstName", field -> field
+                        .setSearchHandler((jooqProvider, s) -> jooqProvider.addCondition(DSL.field("firstName").containsIgnoreCase(s)))
+                        .setOrderHandler((jooqProvider, orderEnum) -> jooqProvider.addSort(DSL.field("firstName"), orderEnum))
+                )
+                .field("lastName", field -> field
+                        .setSearchHandler((jooqProvider, s) -> jooqProvider.addCondition(DSL.field("lastName").containsIgnoreCase(s)))
+                        .setOrderHandler((jooqProvider, orderEnum) -> jooqProvider.addSort(DSL.field("lastName"), orderEnum))
+                )
+                .field("title", field -> field
+                        .setSearchHandler((jooqProvider, s) -> jooqProvider.addCondition(DSL.field("title").containsIgnoreCase(s)))
+                        .setOrderHandler((jooqProvider, orderEnum) -> jooqProvider.addSort(DSL.field("title"), orderEnum))
                 )
                 .field("fullName", field -> field
                         .setDisplaySupplier((entity, context) ->

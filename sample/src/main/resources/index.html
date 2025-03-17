@@ -1,3 +1,27 @@
+<!--
+  ~ The MIT License (MIT)
+  ~
+  ~ Copyright (c) 2025 Pierre Adam
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +36,7 @@
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#example').DataTable({
+            const table = $('#example').DataTable({
                 serverSide: true,
                 processing: true,
                 searching: true,
@@ -25,12 +49,49 @@
                     }
                 },
                 columns: [
+                    {
+                        className: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: ''
+                    },
                     {data: "firstName", orderable: true, searchable: true},
                     {data: "lastName", orderable: true, searchable: true},
                     {data: "title", orderable: true, searchable: true},
                     {data: "bloodGroup", orderable: false, searchable: true},
                     {data: "active", orderable: false, searchable: false}
-                ]
+                ],
+                order: [[1, 'asc']]
+            });
+
+            function format(d) {
+                // `d` is the original data object for the row
+                return (
+                    '<dl>' +
+                    '<dt>Full name:</dt>' +
+                    '<dd>' +
+                    d.fullName +
+                    '</dd>' +
+                    '<dt>UUID:</dt>' +
+                    '<dd>' +
+                    d.uid +
+                    '</dd>'
+                );
+            }
+
+            table.on('click', 'td.dt-control', function (e) {
+                let tr = e.target.closest('tr');
+                let jqData = $(tr).data();
+                let row = table.row(tr);
+                let fullDtData = row.data();
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                } else {
+                    // Open this row
+                    row.child(format(jqData)).show();
+                }
             });
         });
     </script>
@@ -41,6 +102,7 @@
     <table class="display" id="example" style="width:100%">
         <thead>
         <tr>
+            <th style="width: 30px"></th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Title</th>

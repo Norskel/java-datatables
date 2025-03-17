@@ -33,7 +33,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.InputStream;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -56,6 +56,9 @@ public class MainClass {
      */
     private final Undertow server;
 
+    /**
+     * The Object mapper.
+     */
     private final ObjectMapper objectMapper;
 
     /**
@@ -119,8 +122,15 @@ public class MainClass {
      */
     public void index(final HttpServerExchange exchange) {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("index.html");
-             final Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
+        Scanner scanner = null;
+
+        try {
+            if (true) {
+                scanner = new Scanner(new File("sample/src/main/resources/index.html"), StandardCharsets.UTF_8);
+            } else {
+                scanner = new Scanner(this.getClass().getClassLoader().getResourceAsStream("index.html"), StandardCharsets.UTF_8);
+            }
+
             final String content = scanner.useDelimiter("\\A").next();
             exchange.getResponseSender().send(content);
         } catch (final Exception e) {
@@ -128,6 +138,9 @@ public class MainClass {
             exchange.setStatusCode(500);
             exchange.getResponseSender().send("Internal Server Error");
         } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
             exchange.endExchange();
         }
     }

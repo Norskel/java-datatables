@@ -202,19 +202,26 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         return this.objectMapper.valueToTree(result);
     }
 
+    /**
+     * Use object answer boolean.
+     *
+     * @param parameters the parameters
+     * @return the boolean
+     */
     private boolean useObjectAnswer(final Parameters parameters) {
         for (final Column column : parameters.getColumns()) {
             if (column.getData() != null) {
                 try {
                     Long.parseLong(column.getData());
-                    return false;
                 } catch (final NumberFormatException ignore) {
+                    return true;
                     // Not a number, continue checking
                 }
             }
         }
 
-        return true;
+        // All the column are using numbers. We can use non-object answer.
+        return false;
     }
 
     /**
@@ -315,7 +322,7 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
         final ArrayNode data = this.objectMapper.createArrayNode();
 
         parameters.getOrderedColumns().forEach(column -> {
-            if (column == null) {
+            if (column == null || column.getSafeName() == null) {
                 data.addNull();
             } else {
                 final Optional<BiFunction<E, C, String>> optionalDisplaySupplier = this.field(column.getSafeName()).getDisplaySupplier();
@@ -346,10 +353,12 @@ public abstract class SimpleDataTables<E, S, C, U extends SimpleDataTables<E, S,
             final String columnName = column.getSafeName();
             final Optional<BiFunction<E, C, String>> optionalDisplaySupplier = this.field(columnName).getDisplaySupplier();
 
-            if (optionalDisplaySupplier.isPresent()) {
-                data.put(columnName, optionalDisplaySupplier.get().apply(entity, context));
-            } else {
-                data.set(columnName, this.resolveColumn(column, entity, context));
+            if (columnName != null) {
+                if (optionalDisplaySupplier.isPresent()) {
+                    data.put(columnName, optionalDisplaySupplier.get().apply(entity, context));
+                } else {
+                    data.set(columnName, this.resolveColumn(column, entity, context));
+                }
             }
         });
 
