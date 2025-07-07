@@ -81,7 +81,6 @@ public class JooqProvider {
     /**
      * The Sorting.
      */
-    @Setter
     private GroupField[] groupBy;
 
     /**
@@ -185,10 +184,10 @@ public class JooqProvider {
      */
     public long getTotalUnfilteredResultCount() {
         final Field<Integer> countField = DSL.field("count", Integer.class);
-        final Integer count = this.initialFrom
+        final SelectConditionStep<? extends Record> where = this.initialFrom
                 .apply(this.dslContext.select(DSL.count().as(countField)))
-                .where(this.getWhereInitialCondition())
-                .fetchOne(countField);
+                .where(this.getWhereInitialCondition());
+        final Integer count = this.applyGroupCount(where);
         return count == null ? 0L : count;
     }
 
@@ -199,11 +198,30 @@ public class JooqProvider {
      */
     public long getTotalFilteredResultCount() {
         final Field<Integer> countField = DSL.field("count", Integer.class);
-        final Integer count = this.initialFrom
+        final SelectConditionStep<? extends Record> where = this.initialFrom
                 .apply(this.dslContext.select(DSL.count().as(countField)))
-                .where(this.getWhereCondition())
-                .fetchOne(countField);
+                .where(this.getWhereCondition());
+        final Integer count = this.applyGroupCount(where);
         return count == null ? 0L : count;
+    }
+
+    /**
+     * Apply group count integer.
+     *
+     * @param query the query
+     * @return the integer
+     */
+    private Integer applyGroupCount(final SelectConditionStep<? extends Record> query) {
+        final Field<Integer> countField = DSL.field("count", Integer.class);
+
+        if (this.groupBy == null) {
+            return query.fetchOne(countField);
+        } else {
+            return this.dslContext
+                    .select(DSL.count().as(countField))
+                    .from(query.groupBy(this.groupBy))
+                    .fetchOne(countField);
+        }
     }
 
     /**
@@ -232,5 +250,16 @@ public class JooqProvider {
         where.addAll(this.conditions);
 
         return where;
+    }
+
+    /**
+     * Sets group by.
+     *
+     * @param groupBy the group by
+     * @return the group by
+     */
+    public JooqProvider setGroupBy(final GroupField... groupBy) {
+        this.groupBy = groupBy;
+        return this;
     }
 }
